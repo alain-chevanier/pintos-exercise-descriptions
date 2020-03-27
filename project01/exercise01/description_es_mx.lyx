@@ -1,0 +1,1942 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 3cm
+\topmargin 2cm
+\rightmargin 3cm
+\bottommargin 2cm
+\headsep 1.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\paragraph_spacing onehalf
+\noindent
+Sistemas Operativos 2020-2, Práctica 03:
+\begin_inset Newline newline
+\end_inset
+
+Pintos, Interrupciones de Hardware.
+\end_layout
+
+\begin_layout Author
+\paragraph_spacing onehalf
+\noindent
+
+\family sans
+Luis Enrique Serrano Gutiérrez (luis@ciencias.unam.mx)
+\begin_inset Newline newline
+\end_inset
+
+Juan Alberto Camacho Bolaños (juancamacho@ciencias.unam.mx)
+\begin_inset Newline newline
+\end_inset
+
+Ricchy Alaín Pérez Chevanier (alain.chevanier@ciencias.unam.mx)
+\end_layout
+
+\begin_layout Date
+\paragraph_spacing onehalf
+\noindent
+
+\family sans
+\shape smallcaps
+Fecha de Entrega: 23 de Marzo de 2020
+\end_layout
+
+\begin_layout Standard
+\align right
+
+\emph on
+\begin_inset Quotes eld
+\end_inset
+
+It is not enough to do your best: you must know what to do, and THEN do
+ your best
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\align right
+
+\emph on
+W.
+ 
+\emph default
+Edwards
+\emph on
+ Deming
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+
+\noun on
+Nota: Lee toda la práctica antes de comenzar cualquier actividad referente
+ a lo descrito en este documento
+\end_layout
+
+\begin_layout Section
+\paragraph_spacing onehalf
+\noindent
+Objetivo
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+El objetivo de esta práctica es introducir al estudiante al sistema de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|hilos de kernel|
+\end_layout
+
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Procesos
+\end_layout
+
+\end_inset
+
+ y al uso de interrupciones de hardware en 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|Pintos|
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+\paragraph_spacing onehalf
+\noindent
+Introducción
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+Para poder realizar esta práctica tendrás que conocer los servicios que
+ ofrece el módulo de manejo de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+emph{hilos}
+\end_layout
+
+\end_inset
+
+ en 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|Pintos|
+\end_layout
+
+\end_inset
+
+ y cómo utilizarlos, en general como utilizar las funciones que mueven los
+ hilos entre los estados THREAD_READY, THREAD_RUNING y THREAD_BLOCKED; de
+ igual manera tendrás que aprender a utilizar la peliculuar implementación
+ de listas doblemente ligadas que proporciona la API de Pintos.
+ Finalmente necesitarás comprender ligeramente cómo funciona una interrupción
+ de hardware.
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+Las partes del sitio de Pintos que tienes que revisar antes de hacer la
+ práctica (y en general el proyecto 01) son:
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+
+\series bold
+Introducción
+\series default
+: En esta sección encontrarás generalidades del tipo ¿cómo ejecutar Pintos?,
+ ¿donde está cada módulo de Pintos en al estructura de directorios?, etc
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+https://web.stanford.edu/class/cs140/projects/pintos/pintos_1.html#SEC1
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+
+\series bold
+Referencia de Pintos
+\series default
+: Aquí encontrarás una descripción de cómo funciona Pintos, desde el proceso
+ de Loading hasta el Manejo de Memoria Virtual.
+ Para esta práctica es importante leer las siguientes secciones:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+https://web.stanford.edu/class/cs140/projects/pintos/pintos_6.html#SEC90
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+A.1 Loading
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+A.1.1 The loader
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+A.1.3 High-level kernel initialization
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+A.2 Threads (Revisa el código de Pintos mientras lees esta sección)
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+A.2.1 struct thread
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+A.2.2 Thread Functions
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+A.2.3 Thread Switching
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+A.3 Synchronization (Revisa el código de Pintos mientras lees esta sección)
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+A.3.1 Disabling Interrupts, 
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+A.4.3 External Interrupt Handling
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+Para la parte de listas tienen que revisar el código de la implementación,
+ la idea es entender cómo utilizar toda la insfraestructura que proporciona.
+ Dentro del código del módulo de threads hay ejemplos concretos de cómo
+ insertar y elimnar elementos de una listas por lo que quizás sea una buena
+ guía.
+ Los archivos que contienen la implementación/firmas de listas son
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+En el sitio de Pintos probablemente no encuentres información de cómo utilizar
+ las listas, aunque dentro del código que las define/implementa encontrarás
+ todo lo que necesitas para entender cómo utilizarlas.
+\end_layout
+
+\end_inset
+
+:
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+src/lib/kernel/list.h
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+src/lib/kernel/list.c
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+
+\series bold
+Herramientas de Debugging
+\series default
+: Aquí encontrarás las diferentes maneras de hacer debugging del código
+ de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pintos|
+\end_layout
+
+\end_inset
+
+.
+ Las secciones que recomendamos para esta práctica son:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+https://web.stanford.edu/class/cs140/projects/pintos/pintos_10.html#SEC145
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+E.1 printf()
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+E.2 ASSERT
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+E.3 Function and Parameter Attributes
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+E.4 Backtraces
+\end_layout
+
+\end_deeper
+\begin_layout Section
+\paragraph_spacing onehalf
+\noindent
+Práctica
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+En esta práctica tendrás que implementar el segundo requerimiento (2.2.2)
+ del proyecto 01 de Pintos.
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+\align center
+https://web.stanford.edu/class/cs140/projects/pintos/pintos_2.html#SEC25
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+En general se trata de hacer una mejor implementación del la función 
+\family sans
+timer_sleep(...)
+\family default
+ contenida en 
+\family sans
+devices/timer.c
+\family default
+.
+\end_layout
+
+\begin_layout Subsection
+\paragraph_spacing onehalf
+\noindent
+¿Qué hay que hacer?
+\end_layout
+
+\begin_layout Subsubsection
+\paragraph_spacing onehalf
+\noindent
+Instalación de Pintos
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+Al igual que las prácticas anteriores, utilizarás una imagen de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|docker|
+\end_layout
+
+\end_inset
+
+ para poder compilar y ejecutar las pruebas y programas de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pintos|
+\end_layout
+
+\end_inset
+
+, por lo cual puedes ignorar las secciones de la documentación que explican
+ cómo instalar el entorno de desarrollo necesario.
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+Los pasos para iniciar tu entorno de trabajo son las siguientes:
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+Instalar y ejecutar 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|docker|
+\end_layout
+
+\end_inset
+
+ en tu computadoras.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Si hiciste las prácticas anteriores, ya deberías de tener instalado este
+ programa.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+Posiciona tu terminal en el directorio 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pintos|
+\end_layout
+
+\end_inset
+
+ que descargaste junto con este documento.
+\end_layout
+
+\begin_layout Enumerate
+\noindent
+Descargar la imagen base para ejecutar el proyecto:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|./docker-exec pull-image|
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Opcionalmente, también puedes construir tu propia imagen utilizando:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|./docker-exec build-image|
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Si decides utilizar la imagen que construiste, es necesario que modifiques
+ el archivo 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|docker-exec|
+\end_layout
+
+\end_inset
+
+ en la opción 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|enter-container|
+\end_layout
+
+\end_inset
+
+, para que utilice la imagen que construiste localmente.
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+Luego ingresa a la terminal bash del contenedor ejecutando el comando:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|./docker-exec enter-container|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+Una vez que estes dentro de la terminal, realiza las siguientes acciones
+ para ejecutar 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pintos|
+\end_layout
+
+\end_inset
+
+:
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+Posiciona la terminal en el directorio 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|threads|
+\end_layout
+
+\end_inset
+
+:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|cd /pintos-2020-2/src/threads|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+Compila el código de ese módulo:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|make|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+Nos movemos hacia el recien creado directorio 
+\family sans
+build
+\family default
+ y ejecutamos una de las pruebas:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pintos run alarm-multiplo|
+\end_layout
+
+\end_inset
+
+
+\family sans
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Por omisión la imagen de docker ejecuta las pruebas utilizando qemu
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+Ejecuta todas las pruebas de esta práctica:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|cd /pintos-2020-2/src/threads|
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|./execute-tests|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Subsubsection
+\paragraph_spacing onehalf
+\noindent
+Programación
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+El requerimiento 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|2.2.2 
+\begin_inset Quotes eld
+\end_inset
+
+Alarm Clock
+\begin_inset Quotes erd
+\end_inset
+
+|
+\end_layout
+
+\end_inset
+
+ se trata de reimplementar la función 
+\family sans
+timer_sleep(...)
+\family default
+ definida en el archivo 
+\family sans
+devices/timer.c
+\family default
+.
+ Hay una implementación por omisión de dicha funcion que trabaja correctamente,
+ el problema es que gasta tiempo del procesador mientras el hilo que la
+ llama está dormido, i.e.
+ es espera ocupada.
+ El objetivo de esta práctica es proveer una nueva implementación de 
+\family sans
+timer_sleep(...)
+\family default
+ en la cual el proceso que la invoque no gaste tiempo de procesador mientras
+ se encuentra dormido, i.e.
+ si un proceso invoca a 
+\family sans
+timer_sleep(...)
+\family default
+ entonces debe de dejar de ejecutarse y volver a una posible ejecución hasta
+ que en realidad haya transcurrido al menos el número de ticks especificado
+ a 
+\family sans
+timer_sleep(...)
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+Para implementar tu solución sólo deberías de modificar algunos de los siguiente
+s archivos:
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|threads/thread.h|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|threads/thread.c|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|devices/timer.h|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|devices/timer.c|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+En general por cuestiones de modularidad y para ahorrar espacio en el tamaño
+ del 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|PCB|
+\end_layout
+
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Process Control Block
+\end_layout
+
+\end_inset
+
+, quizás sea mejor sólo modificar 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|timer.c|
+\end_layout
+
+\end_inset
+
+, aunque no significa que no haya otras buenas soluciones que modifiquen
+ otros archivos.
+ Si NO modificas el 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|PCB|
+\end_layout
+
+\end_inset
+
+, i.e.
+ 
+\family sans
+struct thread
+\family default
+ como parte de tu solución, recibirás 1 punto extra.
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+Una manera de saber que tu implementación está bien es verificando que pase
+ las siguientes pruebas dentro del proyecto 01:
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|alarm-single|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|alarm-zero|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|alarm-negative|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|alarm-multiple|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|alarm-simultaneous|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+Para esto posiciona la terminal en el directorio 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|threads|
+\end_layout
+
+\end_inset
+
+ y ejecuta el siguiente script:
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|./execute-tests|
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Deberás de ver las siguientes lineas en la salida del script para saber
+ que tu implementación es correcta:
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pass tests/threads/alarm-single|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pass tests/threads/alarm-zero|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pass tests/threads/alarm-negative|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pass tests/threads/alarm-multiple|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pass tests/threads/alarm-simultaneous|
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+puedes ver cuales de las pruebas requeridas ya pasan conforme vayas haciendo
+ tu implementación.
+ Te recomendamos vayas verificando tu implementación considerando las pruebas
+ en el orden mecionado arriba.
+\end_layout
+
+\begin_layout Subsubsection
+\paragraph_spacing onehalf
+\noindent
+Documento de Diseño
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+El requerimiento 2.2.1 del proyecto 01 es hacer un documento de diseño, en
+ realidad dicho documento no puede ser completado hasta que tengas una solución
+ para cada uno de los siguientes requerimientos.
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+Dado que sólo hay que dar una solución para el requerimiento 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|2.2.2 
+\begin_inset Quotes eld
+\end_inset
+
+Alarm Clock
+\begin_inset Quotes erd
+\end_inset
+
+|
+\end_layout
+
+\end_inset
+
+, entonces unicamente hay que llenar la sección correspondiente en el documento
+ de diseño.
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+Junto con este documento distribuimos otro llamado 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|DesignDoc.txt|
+\end_layout
+
+\end_inset
+
+, que es el que tendrás que llenar y entregar como parte de tu solución.
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+\paragraph_spacing onehalf
+\noindent
+Hints
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+Recuerda que un thread 
+\begin_inset Formula $T_{i}$
+\end_inset
+
+ deja el contexto de ejecución cuando pasa al estado THREAD_BLOCK llamando
+ la función 
+\family sans
+thread_block()
+\family default
+, y vuelve al contexto de ejecución cuando algún otro thread 
+\begin_inset Formula $T_{j}$
+\end_inset
+
+ llama sobre 
+\begin_inset Formula $T_{i}$
+\end_inset
+
+ la función 
+\family sans
+thread_unblock(...)
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+Analiza cómo el módulo de threads utiliza un 
+\family sans
+ready_list
+\family default
+ para quitar y poner threads en ejecución, podrías utilizar una idea similar
+ dentro de tu solución .
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+Dentro de 
+\family sans
+devices/timer.c
+\family default
+ hay una función que llamada 
+\family sans
+timer_interrupt()
+\family default
+ que representa el interrupt handler del timer, el cual es invocado cada
+ vez que sucede un tick.
+\end_layout
+
+\begin_layout Itemize
+Para evitar problemas de concurrencia entre una función y un interrupt handler
+ de un dispositivo externo es necesario apagar las interrupciones en la
+ función, para lograr esto es necesario enmarcar el código en un segmento
+ como el siguiente:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|old_level = intr_disable ();|
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|...
+ Aqui va todo el codigo que puede tener |
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|...
+ problemas de concurrencia con una interrupt handler|
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|intr_set_level (old_level);|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+\paragraph_spacing onehalf
+\noindent
+Notas
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+Cuando las interrupciones de hardware están apagadas en el sistema, no hay
+ concurrencia, i.e.
+ sólo el thread de kernel que la atiende se ejecuta y nadie lo puede interrumpir
+ hasta que termine, o cual evidentemente detiene al resto de los procesos.
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+Los manejadores de interrupciones externas se ejecutan con las interrupciones
+ apagadas, i.e.
+ sólo un manejardor se ejecuta al mismo tiempo y de hecho no hay más computo
+ efectivo hasta que dicho manejador termina, por tanto los manejadores deben
+ de ser tan breves como sea posible, pues en realiadad no representan ninguna
+ tarea de ningún proceso activo.
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+Sólo como complemento al punto anterior, en general es importante matener
+ implementaciones tan eficientes como sea posible dentro del kernel de un
+ sistema operativo, ya que es éste el que utilizan todos los programas de
+ usuario como intermediario ante el hardware de la máquina.
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+Utilicen las ideas que vimos en el laboratorio, en general, insertar ordenado
+ en la lista de dormidos y sólo preguntar por el/los proceso(s) al frente
+ de la lista dentro del interrupt handler del timer.
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+Sería muy recomendable que utilices un sistema de control de versiones como
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|git|
+\end_layout
+
+\end_inset
+
+ para hacer cambios versionados dentro de tu código, es necesario hacer
+ una inversión de tiempo para aprender las bases de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|git|
+\end_layout
+
+\end_inset
+
+, pero al final ahorrarás mucho cuando tengas que corregir y quieras regresar
+ a una versión anterior de tu código que sí funciona.
+\end_layout
+
+\begin_layout Subsection
+\paragraph_spacing onehalf
+\noindent
+Entrega
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+Para la entrega de tu solución sólo requerimos que envies los archivos que
+ modificaste como parte de tu solución.
+ Por ejemplo supongamos que sólo modificaste el archivos 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|threads/thread.h|
+\end_layout
+
+\end_inset
+
+ y 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|devices/timer.c|
+\end_layout
+
+\end_inset
+
+.
+ Entonces tu entrega debe de ser un directorio 
+\series bold
+src
+\series default
+ con la siguiente estructura:
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+src
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+|__threads
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+|
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+|__thread.h
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+|
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+|__devices
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+|__timer.c
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+El directorio comprimido que tienes que entregar debe de tener una estructura
+ como a la siguiente
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+practica_03
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+|__DesignDOC.(txt|pdf)
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+|__src
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\noindent
+
+\family sans
+NOTA: El documento de diseño vale el 50% de la calificación de la práctica,
+ así que escríbelo con tanto cuidado como el código mismo.
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\paragraph_spacing onehalf
+\noindent
+FAQ
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+Para ejecutar una prueba particular con puedes utilizar una instrucción
+ como la siguiente:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|cd /pintos-2020-2/src/threads|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|make|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pintos run alarm-single|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Para ejecutar todas las pruebas que tienes que pasar en esta práctica, ejecuta
+ los siguientes comandos:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|cd /pintos-2020-2/src/threads|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|./execute-tests|
+\end_layout
+
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Este script lo creamos nosotros, para que solamente se ejecuten las pruebas
+ requeridas en esta práctica, de otra manera hay que ejecutar el comando
+ 
+\begin_inset Quotes eld
+\end_inset
+
+make check SIMULATOR=--qemu
+\begin_inset Quotes erd
+\end_inset
+
+ que ejecutaría todas las pruebas de la proyecto 01.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+El código de las pruebas de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pintos|
+\end_layout
+
+\end_inset
+
+ se encuentra dentro del directorio 
+\family sans
+src/test
+\family default
+, para esta parte del proyecto 01 están dentro del directorio 
+\family sans
+src/test/threads
+\family default
+, allí podrás ver el código de las pruebas que tienes que pasar.
+\end_layout
+
+\begin_layout Enumerate
+\paragraph_spacing onehalf
+\noindent
+Podrías también leer el FAQ del proyecto 01.
+\end_layout
+
+\end_body
+\end_document

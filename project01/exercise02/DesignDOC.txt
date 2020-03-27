@@ -1,0 +1,53 @@
+                        +--------------------+
+			| PROJECT 1: THREADS |
+			| Priority Scheduler |
+			|   DESIGN DOCUMENT  |
+			+--------------------+
+				   
+---- GROUP ----
+
+>> Fill in the names and email addresses of your group members.
+
+FirstName LastName <email@domain.example>
+FirstName LastName <email@domain.example>
+
+---- PRELIMINARIES ----
+
+>> If you have any preliminary comments on your submission, notes for the
+>> TAs, or extra credit, please give them here.
+
+>> Please cite any offline or online sources you consulted while
+>> preparing your submission, other than the Pintos documentation, course
+>> text, lecture notes, and course staff.
+
+   	 	 	 PRIORITY SCHEDULING
+			 ===================
+
+---- DATA STRUCTURES ----
+
+>> B1: Copy here the declaration of each new or changed `struct' or
+>> `struct' member, global or static variable, `typedef', or
+>> enumeration.  Identify the purpose of each in 25 words or less.
+
+---- ALGORITHMS ----
+
+>> B2: How do you ensure that the highest priority thread waiting for
+>> a semaphore or condition variable wakes up first?
+
+>> B3: How do you manage preemption when it is necessary during an 
+>> interrupt handler?
+
+>> B4: Did you need to reorganize any instruction inside the code
+>> that manages semaphores or condition variables? if your answer is
+>> yes explain why
+
+---- SYNCHRONIZATION ----
+
+>> The whole scheduler works with disabled interruptions,
+>> so you do not have to worry about synchronization for this
+>> assignment.
+
+---- RATIONALE ----
+
+>> B7: Why did you choose this design?  In what ways is it superior to
+>> another design you considered?

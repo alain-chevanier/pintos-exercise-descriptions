@@ -1,0 +1,953 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 3cm
+\topmargin 2cm
+\rightmargin 3cm
+\bottommargin 2cm
+\headsep 1.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Sistemas Operativos 2020-2, Práctica 04:
+\begin_inset Newline newline
+\end_inset
+
+Pintos, Scheduler de Prioridades
+\end_layout
+
+\begin_layout Author
+\paragraph_spacing onehalf
+\noindent
+
+\family sans
+Luis Enrique Serrano Gutiérrez (luis@ciencias.unam.mx)
+\begin_inset Newline newline
+\end_inset
+
+Juan Alberto Camacho Bolaños (juancamacho@ciencias.unam.mx)
+\begin_inset Newline newline
+\end_inset
+
+Ricchy Alaín Pérez Chevanier (alain.chevanier@ciencias.unam.mx)
+\end_layout
+
+\begin_layout Date
+
+\family sans
+\shape smallcaps
+Fecha de Entrega: 17 de Abril de 2020
+\end_layout
+
+\begin_layout Section
+Objetivo
+\end_layout
+
+\begin_layout Standard
+El objetivo de esta práctica es que el alumno implemente un scheduler de
+ prioridades dentro de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pintos|
+\end_layout
+
+\end_inset
+
+, además de resolver las distintas problemáticas que surgen de dicha implementac
+ión sobre el comportamiento de otros componentes del sistema operativo.
+\end_layout
+
+\begin_layout Section
+Introducción
+\end_layout
+
+\begin_layout Standard
+Gracias a la práctica anterior ahora ya tienes un mejor entendimiento de
+ cómo funciona el módulo de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|threads|
+\end_layout
+
+\end_inset
+
+ en 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pintos|
+\end_layout
+
+\end_inset
+
+ y también un poco el manejo de interrupciones, pues de hecho modificaste
+ el interrupt handler del timer de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|kernel|
+\end_layout
+
+\end_inset
+
+ como parte de tu solución.
+\end_layout
+
+\begin_layout Standard
+Durante las sesiones de laboratorio hemos visto a grandes rasgos cómo funciona
+ la implementación por omisión del Scheduler de Pintos, es un 
+\family sans
+Round Robin
+\family default
+ i.e.
+ cada proceso tiene la misma cantidad de tiempo para ejecutarse dentro del
+ sistema y son elegidos en orden FIFO.
+ El objetivo de esta práctica es modificar el funcionamiento del Scheduler
+ de Pintos de tal manera que ahora funcione como un Scheduler de Prioridades.
+ Lo que buscamos ahora es que el Scheduler garantice que el thread con mayor
+ prioridad sea el que se esté ejecutando en todo momento.
+ 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\paragraph_spacing onehalf
+Existen algunos casos especiales en los que esto no es necesariamente cierto,
+ pero de hecho son parte del desarrollo de ésta y de las siguientes prácticas
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Scheduling en Pintos
+\end_layout
+
+\begin_layout Standard
+En Pintos el scheduling se lleva a cabo dentro del módulo de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|threads|
+\end_layout
+
+\end_inset
+
+, i.e.
+ dentro del archivo 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|thread.c|
+\end_layout
+
+\end_inset
+
+
+\series bold
+.
+
+\series default
+ La función encargada de realizar todo los pasos que implica una llamada
+ a scheduler es 
+\family sans
+schedule()
+\family default
+, que por medio de la función 
+\family sans
+next_thread_to_run()
+\family default
+ elige al siguiente thread que recibirá tiempo de procesador.
+ Revisando el código podrás darte cuenta si hay threads listos para ser
+ ejecutado dentro de la lista 
+\family sans
+ready_list
+\family default
+ entonces se escoge el que esté al frente
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Se elige siguiente thread a ejecutarse haciendo pop_front de la ready_list
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Las únicas funciones públicas del módulo de threads que permiten añadir
+ threads a la lista 
+\family sans
+ready_list
+\family default
+ son 
+\family sans
+thread_unblock()
+\family default
+ y 
+\family sans
+thread_yield()
+\family default
+.
+ A continuación una breve descripción de cada una:
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+thread_unblock()
+\family default
+: Recibe como parámetro un thread en estado THREAD_BLOCK y lo encola al
+ final de la lista 
+\family sans
+ready_list
+\family default
+.
+ Esta función puede ser llamada en todo momento, incluso en contexto de
+ interupciones, por ejemplo durante una llamada al interrupt handler del
+ timer de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pintos|
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+thread_yield()
+\family default
+: Fuerza un cambio de contexto.
+ Hace que el proceso actual ceda el procesador a alguien más dentro de la
+ lista 
+\family sans
+ready_list
+\family default
+, para ello el proceso actual se encola dentro de dicha lista y después
+ llama a la función 
+\family sans
+schedule()
+\family default
+.
+ Es importante mencionar que esta función no puede ser llamada dentro de
+ un interrupt handler pues estos deben de ejecutarse por completo antes
+ de que cualquier otro proceso pueda ejecutarse, si quieres obtener el mismo
+ resultado dentro de un interrupt handler entonces tienes que llamar a la
+ función 
+\family sans
+intr_yield_on_return()
+\family default
+, que lo que hace es posponer la llamada de 
+\family sans
+thread_yield()
+\family default
+ al momento en el que el interrupt handler termina de ejecutarse.
+\end_layout
+
+\begin_layout Standard
+Dicho lo anterior las únicas funciones que afectan el contenido del 
+\family sans
+ready_list
+\family default
+ son:
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+thread_unblock(...)
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+thread_yield()
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+next_thread_to_run()
+\end_layout
+
+\begin_layout Standard
+Como parte de tu solución, ahora estas tres funciones deben de asegurar
+ que el scheduler se comporte como un scheduler de prioridades.
+\end_layout
+
+\begin_layout Section
+Actividades
+\end_layout
+
+\begin_layout Subsection
+Programación
+\end_layout
+
+\begin_layout Standard
+Implementan un 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|scheduler|
+\end_layout
+
+\end_inset
+
+ de prioridades en 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pintos|
+\end_layout
+
+\end_inset
+
+.
+ Cuando un proceso es añadido a la 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|ready_list|
+\end_layout
+
+\end_inset
+
+ y este tiene una prioridad mayor a la del proceso que se encuentra actualmente
+ corriendo, el proceso actual debe 
+\begin_inset Quotes eld
+\end_inset
+
+inmediatamente
+\begin_inset Quotes erd
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Excepto si se encuentra atendiendo una interrupción externa/de hardware,
+ en cuyo casi espera ha que la interrupción sea atendida y después hay un
+ cambio de contexto.
+\end_layout
+
+\end_inset
+
+ ceder el procesador a el nuevo proceso.
+ Similarmente, cuando un proceso está esperando en un candado, semáforo
+ o variable de condición, el proceso en espera con la más alta prioridad
+ debe de ser despertado primero.
+ Un proceso puede incrementar o disminuir su propia prioridad en cualquier
+ momento, pero si éste disminuye su prioridad y deja de ser la más alta,
+ debe de 
+\begin_inset Quotes eld
+\end_inset
+
+inmediatamente
+\begin_inset Quotes erd
+\end_inset
+
+ ceder el CPU.
+\end_layout
+
+\begin_layout Standard
+La prioridad de los hilos de kernel va desde 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|PRI_MIN (0)|
+\end_layout
+
+\end_inset
+
+ hasta 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|PRI_MAX (63)|
+\end_layout
+
+\end_inset
+
+.
+ Los números más bajos corresponden a prioridades más bajas, es decir, la
+ prioridad 0 es la más baja y 63 la más alta.
+ La prioridad inicial de de proceso es pasada como argumento a la función
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|thread_create (...)|
+\end_layout
+
+\end_inset
+
+.
+ Si no hay otra razón para elegir otra prioridad, utiliza 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|PRI_DEFAULT (31)|
+\end_layout
+
+\end_inset
+
+.
+ Los macros 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|PRI_*|
+\end_layout
+
+\end_inset
+
+ están definidos en el archivo 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|threads/thread.h|
+\end_layout
+
+\end_inset
+
+ y nunca debes de modificar estos valores.
+\end_layout
+
+\begin_layout Standard
+Para esta práctica hay que hacer las bases del requerimiento 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|2.2.3 
+\begin_inset Quotes eld
+\end_inset
+
+Priority Scheduling
+\begin_inset Quotes erd
+\end_inset
+
+|
+\end_layout
+
+\end_inset
+
+ del proyecto 01 de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pintos|
+\end_layout
+
+\end_inset
+
+, para ello limitaremos el conjunto pequeño de pruebas que tienes que pasar.
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+https://web.stanford.edu/class/cs140/projects/pintos/pintos_2.html#SEC26
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Las pruebas que tendrás que pasar para saber que tu solución está completa,
+ son las siguientes:
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+alarm-priority
+\family default
+: Crea diversos threads y los pone a dormir, prueba que dichos threads se
+ ejecuten en el orden que dicta su prioridad.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+priority-change
+\family default
+: Se trata de modificar la función 
+\family sans
+thread_set_priority()
+\family default
+, de tal manera que si el thread actual disminuye su prioridad y deja de
+ ser el thread con mayor prioridad entonces cede el procesador al thread
+ con mayor prioridad dentro de la lista 
+\family sans
+ready_list
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+priority-preempt
+\family default
+: Si el proceso actual crea otro proceso pero con mayor prioridad, entonces
+ tan pronto como sea posible el proceso actual cede el procesador a dicho
+ proceso nuevo; y aunque el proceso nuevo fuerce llamadas al scheduler,
+ éste es el que continusa ejecutándose pues sigue siendo el proceso con
+ mayor prioridad.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+priority-fifo
+\family default
+: Si hay más de un proceso con la prioridad más alta del sistema entonces
+ para ellos el scheduler se comporta como un 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|Round Robin|
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+priority-sema
+\family default
+: Referente a semáforos, lo que prueba es que el thread de más alta prioridad
+ que está esperando en un semáforo sea el priomero en salir de su lista
+ de espera.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+priority-condvar
+\family default
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Esta prueba es opcional pero si la sacan tendrá un punto extra
+\end_layout
+
+\end_inset
+
+: Referente a variables condicionales, una variable condicional también
+ tiene una lista de espera, igual que para la prueba anterior el proceso
+ que debe de abandonar primero la lista de espera de la variable condicional
+ debe de ser siempre el de mayor prioridad.
+\end_layout
+
+\begin_layout Standard
+A continuación la lista de archivos que podrías modificar como parte de
+ tu desarrollo:
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+threads/thread.h, threads/thread.c
+\family default
+ : 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|threads/thread.h|
+\end_layout
+
+\end_inset
+
+Código referente al módulo de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|threads|
+\end_layout
+
+\end_inset
+
+ de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pintos|
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+threads/synch.h, threads/synch.c
+\family default
+: Código con la definición e implementación de semáforos, candados y variables
+ de condición para el uso de ellos por el módulo de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|threads|
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Recomendamos ampliamente que leas el requerimiento dentro del sitio de Pintos
+ para tener un mejor entendimiento de lo que tienes que hacer.
+ También sugerimos que intentes pasar las pruebas en el orden en el que
+ las estamos enunciando arriba.
+\end_layout
+
+\begin_layout Standard
+Si haces que su solución meta y saque procesos de la estructura que representa
+ al 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|ready_list|
+\end_layout
+
+\end_inset
+
+ en tiempo constante y lo justificas bien en tu documento de diseño tendrás
+ un punto extra.
+\end_layout
+
+\begin_layout Subsection
+Documento de Diseño
+\end_layout
+
+\begin_layout Standard
+Igual que en la práctica anterior tendrás que entregar el documento de diseño
+ asociado a tu solución, de nuevo entregamos este documento junto con el
+ archivo 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|DesignDOC.txt|
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Hints
+\end_layout
+
+\begin_layout Itemize
+Para la práctica anterior ya vimos cómo insertar elementos dentro de una
+ lista ordenada, así que podrías utilizar la misma idea dentro de tu solución
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Aunque esto implicaría que la inserción de procesos en la lista lleve tiempo
+ lineal
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Ten cuidado cuando quieras forzar un cambio de contexto, es decir, cuando
+ quieras un cambio de contexto, pues en el caso de la función 
+\family sans
+thread_unblock(...)
+\family default
+ nada impide que ésta sea llamada dentro de un 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|interrupt handler|
+\end_layout
+
+\end_inset
+
+; más aun dentro de tu solución a la práctica anterior haces llamadas a
+ 
+\family sans
+thread_unblock(...)
+\family default
+ dentro del interrupt handler del timer 
+\family sans
+timer_interrupt()
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+Dentro de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|threads/interrupt.c|
+\end_layout
+
+\end_inset
+
+ está la función 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|intr_context ()|
+\end_layout
+
+\end_inset
+
+ que regresa 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|true|
+\end_layout
+
+\end_inset
+
+ si el proceso actual está atendiendo la ejecución de una interrupción externa/d
+e hardware.
+\end_layout
+
+\begin_layout Itemize
+Atención con los semáforos, asegurate que antes de hacer un posible cambio
+ de contexto en realidad estés incrementado el valor del semáforo.
+\end_layout
+
+\begin_layout Section
+Entrega
+\end_layout
+
+\begin_layout Standard
+Tienes que entregar todos los archivos que modificaste como parte de tu
+ solución, seguiendo la estructura también descrita en la práctica anterior,
+ y sólo esos archivos.
+\end_layout
+
+\begin_layout Standard
+De nuevo el documento de diseño vale la mitad de la calificación de la práctica.
+\end_layout
+
+\end_body
+\end_document
