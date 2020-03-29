@@ -83,6 +83,7 @@
 \begin_body
 
 \begin_layout Title
+\paragraph_spacing double
 Sistemas Operativos 2020-2, Práctica 04:
 \begin_inset Newline newline
 \end_inset
@@ -91,8 +92,7 @@ Pintos, Scheduler de Prioridades
 \end_layout
 
 \begin_layout Author
-\paragraph_spacing onehalf
-\noindent
+\paragraph_spacing double
 
 \family sans
 Luis Enrique Serrano Gutiérrez (luis@ciencias.unam.mx)
@@ -107,19 +107,34 @@ Ricchy Alaín Pérez Chevanier (alain.chevanier@ciencias.unam.mx)
 \end_layout
 
 \begin_layout Date
+\paragraph_spacing double
 
 \family sans
 \shape smallcaps
-Fecha de Entrega: 17 de Abril de 2020
+Fecha de Entrega: 24 de Abril de 2020
 \end_layout
 
 \begin_layout Section
+\paragraph_spacing double
 Objetivo
 \end_layout
 
 \begin_layout Standard
-El objetivo de esta práctica es que el alumno implemente un scheduler de
- prioridades dentro de 
+\paragraph_spacing double
+El objetivo de esta práctica es que el alumno implemente un 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|scheduler de prioridades|
+\end_layout
+
+\end_inset
+
+ dentro de 
 \begin_inset ERT
 status open
 
@@ -137,10 +152,12 @@ ión sobre el comportamiento de otros componentes del sistema operativo.
 \end_layout
 
 \begin_layout Section
+\paragraph_spacing double
 Introducción
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing double
 Gracias a la práctica anterior ahora ya tienes un mejor entendimiento de
  cómo funciona el módulo de 
 \begin_inset ERT
@@ -168,8 +185,8 @@ verb|pintos|
 
 \end_inset
 
- y también un poco el manejo de interrupciones, pues de hecho modificaste
- el interrupt handler del timer de 
+ y también un del manejo de interrupciones, pues de hecho modificaste el
+ 
 \begin_inset ERT
 status open
 
@@ -177,27 +194,144 @@ status open
 
 
 \backslash
-verb|kernel|
+verb|interrupt handler|
 \end_layout
 
 \end_inset
 
- como parte de tu solución.
+ del 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|timer|
+\end_layout
+
+\end_inset
+
+ de como parte de tu solución.
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing double
 Durante las sesiones de laboratorio hemos visto a grandes rasgos cómo funciona
- la implementación por omisión del Scheduler de Pintos, es un 
+ la implementación por omisión del 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|scheduler|
+\end_layout
+
+\end_inset
+
+ de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pintos|
+\end_layout
+
+\end_inset
+
+, es un 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|Round Robin|
+\end_layout
+
+\end_inset
+
+
 \family sans
-Round Robin
+,
 \family default
  i.e.
  cada proceso tiene la misma cantidad de tiempo para ejecutarse dentro del
- sistema y son elegidos en orden FIFO.
- El objetivo de esta práctica es modificar el funcionamiento del Scheduler
- de Pintos de tal manera que ahora funcione como un Scheduler de Prioridades.
- Lo que buscamos ahora es que el Scheduler garantice que el thread con mayor
- prioridad sea el que se esté ejecutando en todo momento.
+ sistema y son elegidos en orden 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|FIFO|
+\end_layout
+
+\end_inset
+
+.
+ El objetivo de esta práctica es modificar el funcionamiento del 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|scheduler|
+\end_layout
+
+\end_inset
+
+ de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pintos|
+\end_layout
+
+\end_inset
+
+ de tal manera que ahora funcione como un 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|scheduler de prioridades|
+\end_layout
+
+\end_inset
+
+.
+ Lo que buscamos ahora es que el 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|scheduler|
+\end_layout
+
+\end_inset
+
+ garantice que el proceso con mayor prioridad sea el que se esté ejecutando
+ en todo momento.
  
 \begin_inset Foot
 status open
@@ -214,11 +348,26 @@ Existen algunos casos especiales en los que esto no es necesariamente cierto,
 \end_layout
 
 \begin_layout Subsection
+\paragraph_spacing double
 Scheduling en Pintos
 \end_layout
 
 \begin_layout Standard
-En Pintos el scheduling se lleva a cabo dentro del módulo de 
+\paragraph_spacing double
+En 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|pintos|
+\end_layout
+
+\end_inset
+
+ el scheduling se lleva a cabo dentro del módulo de 
 \begin_inset ERT
 status open
 
@@ -252,25 +401,56 @@ verb|thread.c|
 \series default
  La función encargada de realizar todo los pasos que implica una llamada
  a scheduler es 
-\family sans
-schedule()
-\family default
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|schedule()|
+\end_layout
+
+\end_inset
+
 , que por medio de la función 
-\family sans
-next_thread_to_run()
-\family default
- elige al siguiente thread que recibirá tiempo de procesador.
- Revisando el código podrás darte cuenta si hay threads listos para ser
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|next_thread_to_run()|
+\end_layout
+
+\end_inset
+
+ elige al siguiente proceso que recibirá tiempo de procesador.
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+Revisando el código podrás darte cuenta si hay procesos listos para ser
  ejecutado dentro de la lista 
-\family sans
-ready_list
-\family default
- entonces se escoge el que esté al frente
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|ready_list|
+\end_layout
+
+\end_inset
+
+ entonces se escoge el que está al frente
 \begin_inset Foot
 status open
 
 \begin_layout Plain Layout
-Se elige siguiente thread a ejecutarse haciendo pop_front de la ready_list
+Haciendo list_pop_front de la ready_list
 \end_layout
 
 \end_inset
@@ -279,33 +459,91 @@ Se elige siguiente thread a ejecutarse haciendo pop_front de la ready_list
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing double
 Las únicas funciones públicas del módulo de threads que permiten añadir
  threads a la lista 
-\family sans
-ready_list
-\family default
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|ready_list|
+\end_layout
+
+\end_inset
+
  son 
-\family sans
-thread_unblock()
-\family default
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|thread_unblock(...)|
+\end_layout
+
+\end_inset
+
  y 
-\family sans
-thread_yield()
-\family default
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|thread_yield()|
+\end_layout
+
+\end_inset
+
 .
  A continuación una breve descripción de cada una:
 \end_layout
 
 \begin_layout Itemize
+\paragraph_spacing double
+\begin_inset ERT
+status open
 
-\family sans
-thread_unblock()
-\family default
-: Recibe como parámetro un thread en estado THREAD_BLOCK y lo encola al
- final de la lista 
-\family sans
-ready_list
-\family default
+\begin_layout Plain Layout
+
+
+\backslash
+verb|thread_unblock()|
+\end_layout
+
+\end_inset
+
+: Recibe como parámetro un thread en estado 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|THREAD_BLOCK|
+\end_layout
+
+\end_inset
+
+ y lo encola al final de la lista 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|ready_list|
+\end_layout
+
+\end_inset
+
 .
  Esta función puede ser llamada en todo momento, incluso en contexto de
  interupciones, por ejemplo durante una llamada al interrupt handler del
@@ -326,16 +564,33 @@ verb|pintos|
 \end_layout
 
 \begin_layout Itemize
+\paragraph_spacing double
+\begin_inset ERT
+status open
 
-\family sans
-thread_yield()
-\family default
-: Fuerza un cambio de contexto.
- Hace que el proceso actual ceda el procesador a alguien más dentro de la
- lista 
-\family sans
-ready_list
-\family default
+\begin_layout Plain Layout
+
+
+\backslash
+verb|thread_yield()|
+\end_layout
+
+\end_inset
+
+: Fuerza un cambio de contexto, hace que el proceso actual ceda el procesador
+ a alguien más dentro de la lista 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|ready_list|
+\end_layout
+
+\end_inset
+
 , para ello el proceso actual se encola dentro de dicha lista y después
  llama a la función 
 \family sans
@@ -343,61 +598,149 @@ schedule()
 \family default
 .
  Es importante mencionar que esta función no puede ser llamada dentro de
- un interrupt handler pues estos deben de ejecutarse por completo antes
- de que cualquier otro proceso pueda ejecutarse, si quieres obtener el mismo
- resultado dentro de un interrupt handler entonces tienes que llamar a la
- función 
-\family sans
-intr_yield_on_return()
-\family default
+ un 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|interrupt handler|
+\end_layout
+
+\end_inset
+
+ pues estos deben de ejecutarse por completo antes de que cualquier otro
+ proceso pueda ejecutarse, si quieres obtener el mismo resultado dentro
+ de un 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|interrupt handler|
+\end_layout
+
+\end_inset
+
+, tienes que llamar a la función 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|intr_yield_on_return()|
+\end_layout
+
+\end_inset
+
 , que lo que hace es posponer la llamada de 
-\family sans
-thread_yield()
-\family default
- al momento en el que el interrupt handler termina de ejecutarse.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|thread_yield()|
+\end_layout
+
+\end_inset
+
+ al momento en el que el 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|interrupt handler|
+\end_layout
+
+\end_inset
+
+ termina de ejecutarse.
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing double
 Dicho lo anterior las únicas funciones que afectan el contenido del 
-\family sans
-ready_list
-\family default
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|ready_list|
+\end_layout
+
+\end_inset
+
  son:
 \end_layout
 
 \begin_layout Itemize
+\paragraph_spacing double
+\begin_inset ERT
+status open
 
-\family sans
-thread_unblock(...)
+\begin_layout Plain Layout
+
+
+\backslash
+verb|thread_unblock(...)|
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
+\paragraph_spacing double
+\begin_inset ERT
+status open
 
-\family sans
-thread_yield()
+\begin_layout Plain Layout
+
+
+\backslash
+verb|thread_yield()|
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
+\paragraph_spacing double
+\begin_inset ERT
+status open
 
-\family sans
-next_thread_to_run()
+\begin_layout Plain Layout
+
+
+\backslash
+verb|next_thread_to_run()|
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing double
 Como parte de tu solución, ahora estas tres funciones deben de asegurar
- que el scheduler se comporte como un scheduler de prioridades.
-\end_layout
-
-\begin_layout Section
-Actividades
-\end_layout
-
-\begin_layout Subsection
-Programación
-\end_layout
-
-\begin_layout Standard
-Implementan un 
+ que el 
 \begin_inset ERT
 status open
 
@@ -410,7 +753,81 @@ verb|scheduler|
 
 \end_inset
 
- de prioridades en 
+ se comporte como un 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|scheduler de prioridades|
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+\paragraph_spacing double
+\noindent
+Actividades
+\end_layout
+
+\begin_layout Subsection
+\paragraph_spacing double
+\noindent
+Base de código
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+\noindent
+Recibirás la misma base de código que para la práctica pasada, solo el script
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|execute-tests|
+\end_layout
+
+\end_inset
+
+ es actualizado para poder ejecutar las nuevas pruebas que necesitas pasar,
+ sin embargo, tienes que utilizar la solución de tu práctica anterior también
+ como base de esta práctica.
+ De hecho en tu entrega tienes que enviar todos los archivos que modificaste
+ tanto en esta práctica como en la anterior para que nosotros podamos evaluar
+ tu solución en su totalidad.
+\end_layout
+
+\begin_layout Subsection
+\paragraph_spacing double
+\noindent
+Programación
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+Implementan un 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|scheduler de prioridades|
+\end_layout
+
+\end_inset
+
+ en 
 \begin_inset ERT
 status open
 
@@ -423,8 +840,7 @@ verb|pintos|
 
 \end_inset
 
-.
- Cuando un proceso es añadido a la 
+, es decir, cuando un proceso es añadido a la 
 \begin_inset ERT
 status open
 
@@ -458,8 +874,8 @@ Excepto si se encuentra atendiendo una interrupción externa/de hardware,
 
 \end_inset
 
- ceder el procesador a el nuevo proceso.
- Similarmente, cuando un proceso está esperando en un candado, semáforo
+ ceder el procesador al nuevo proceso.
+ De forma similar, cuando un proceso está esperando en un candado, semáforo
  o variable de condición, el proceso en espera con la más alta prioridad
  debe de ser despertado primero.
  Un proceso puede incrementar o disminuir su propia prioridad en cualquier
@@ -476,6 +892,7 @@ inmediatamente
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing double
 La prioridad de los hilos de kernel va desde 
 \begin_inset ERT
 status open
@@ -564,6 +981,7 @@ verb|threads/thread.h|
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing double
 Para esta práctica hay que hacer las bases del requerimiento 
 \begin_inset ERT
 status open
@@ -606,6 +1024,7 @@ verb|pintos|
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing double
 \align center
 https://web.stanford.edu/class/cs140/projects/pintos/pintos_2.html#SEC26
 \begin_inset Newline newline
@@ -615,11 +1034,13 @@ https://web.stanford.edu/class/cs140/projects/pintos/pintos_2.html#SEC26
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing double
 Las pruebas que tendrás que pasar para saber que tu solución está completa,
  son las siguientes:
 \end_layout
 
 \begin_layout Itemize
+\paragraph_spacing double
 
 \family sans
 alarm-priority
@@ -629,6 +1050,7 @@ alarm-priority
 \end_layout
 
 \begin_layout Itemize
+\paragraph_spacing double
 
 \family sans
 priority-change
@@ -647,6 +1069,7 @@ ready_list
 \end_layout
 
 \begin_layout Itemize
+\paragraph_spacing double
 
 \family sans
 priority-preempt
@@ -660,6 +1083,7 @@ priority-preempt
 \end_layout
 
 \begin_layout Itemize
+\paragraph_spacing double
 
 \family sans
 priority-fifo
@@ -682,6 +1106,7 @@ verb|Round Robin|
 \end_layout
 
 \begin_layout Itemize
+\paragraph_spacing double
 
 \family sans
 priority-sema
@@ -692,6 +1117,7 @@ priority-sema
 \end_layout
 
 \begin_layout Itemize
+\paragraph_spacing double
 
 \family sans
 priority-condvar
@@ -713,16 +1139,33 @@ Esta prueba es opcional pero si la sacan tendrá un punto extra
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing double
+Al igual que en la práctica anterior, proveemos el script de elevaluación
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|src/threads/execute-tests|
+\end_layout
+
+\end_inset
+
+, que ejecutará todas las pruebas de este práctica y de la anterior, es
+ decir, todas las pruebas que hemos resuelto del proyecto 01.
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
 A continuación la lista de archivos que podrías modificar como parte de
  tu desarrollo:
 \end_layout
 
 \begin_layout Itemize
-
-\family sans
-threads/thread.h, threads/thread.c
-\family default
- : 
+\paragraph_spacing double
 \begin_inset ERT
 status open
 
@@ -735,7 +1178,24 @@ verb|threads/thread.h|
 
 \end_inset
 
-Código referente al módulo de 
+
+\family sans
+, 
+\family default
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|threads/thread.c|
+\end_layout
+
+\end_inset
+
+ : Código referente al módulo de 
 \begin_inset ERT
 status open
 
@@ -765,10 +1225,36 @@ verb|pintos|
 \end_layout
 
 \begin_layout Itemize
+\paragraph_spacing double
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|threads/sync.h|
+\end_layout
+
+\end_inset
+
 
 \family sans
-threads/synch.h, threads/synch.c
+, 
 \family default
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|threads/sync.h|
+\end_layout
+
+\end_inset
+
 : Código con la definición e implementación de semáforos, candados y variables
  de condición para el uso de ellos por el módulo de 
 \begin_inset ERT
@@ -787,6 +1273,7 @@ verb|threads|
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing double
 Recomendamos ampliamente que leas el requerimiento dentro del sitio de Pintos
  para tener un mejor entendimiento de lo que tienes que hacer.
  También sugerimos que intentes pasar las pruebas en el orden en el que
@@ -794,8 +1281,9 @@ Recomendamos ampliamente que leas el requerimiento dentro del sitio de Pintos
 \end_layout
 
 \begin_layout Standard
-Si haces que su solución meta y saque procesos de la estructura que representa
- al 
+\paragraph_spacing double
+Si haces que tu solución meta y saque procesos de la estructura que representa
+ la 
 \begin_inset ERT
 status open
 
@@ -813,10 +1301,12 @@ verb|ready_list|
 \end_layout
 
 \begin_layout Subsection
+\paragraph_spacing double
 Documento de Diseño
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing double
 Igual que en la práctica anterior tendrás que entregar el documento de diseño
  asociado a tu solución, de nuevo entregamos este documento junto con el
  archivo 
@@ -836,12 +1326,84 @@ verb|DesignDOC.txt|
 \end_layout
 
 \begin_layout Section
+\paragraph_spacing onehalf
+\noindent
 Hints
 \end_layout
 
 \begin_layout Itemize
-Para la práctica anterior ya vimos cómo insertar elementos dentro de una
- lista ordenada, así que podrías utilizar la misma idea dentro de tu solución
+\paragraph_spacing onehalf
+\noindent
+El proceso 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|idle_thread|
+\end_layout
+
+\end_inset
+
+ es un caso especial, de hecho tiene prioridad 0; cuando él desbloquea a
+ otros procesos por medio de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|thread_unblock(...)|
+\end_layout
+
+\end_inset
+
+, deja que éste termine su ejecución, es decir no fuerces un cambio de contexto
+ aunque los procesos que está desbloqueando tengan mayor priodad que él,
+ de otra manera el sistema operativo no podrá iniciar.
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+Dado que las prioridades están acotadas entre 0 y 63, es posible utilizar
+ una estructura que en tiempo constante nos diga donde en qué nivel vamos
+ a insertar un proceso en la 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|ready_list|
+\end_layout
+
+\end_inset
+
+ de acuerdo a su prioridad.
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+Otra opción que ya conoces, es mantener la 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|ready_list|
+\end_layout
+
+\end_inset
+
+ ordenada, sin embargo insertar en una lista ordenada toma tiempo lineal
 \begin_inset Foot
 status open
 
@@ -856,11 +1418,22 @@ Aunque esto implicaría que la inserción de procesos en la lista lleve tiempo
 \end_layout
 
 \begin_layout Itemize
-Ten cuidado cuando quieras forzar un cambio de contexto, es decir, cuando
- quieras un cambio de contexto, pues en el caso de la función 
-\family sans
-thread_unblock(...)
-\family default
+\paragraph_spacing onehalf
+\noindent
+Ten cuidado cuando quieras forzar un cambio de contexto, pues en el caso
+ de la función 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|thread_unblock(...)|
+\end_layout
+
+\end_inset
+
  nada impide que ésta sea llamada dentro de un 
 \begin_inset ERT
 status open
@@ -876,17 +1449,114 @@ verb|interrupt handler|
 
 ; más aun dentro de tu solución a la práctica anterior haces llamadas a
  
-\family sans
-thread_unblock(...)
-\family default
- dentro del interrupt handler del timer 
-\family sans
-timer_interrupt()
-\family default
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|thread_unblock(...)|
+\end_layout
+
+\end_inset
+
+ dentro del 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|interrupt handler|
+\end_layout
+
+\end_inset
+
+ del 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|timer|
+\end_layout
+
+\end_inset
+
 .
 \end_layout
 
 \begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
+Uno de los requerimientos para pasar algunas de las pruebas, es que cuando
+ un proceso que está corriendo deje de ser el de más alta prioridad, fuerces
+ un cambio de contexto.
+ Lo anterior implica que al momento de que un proceso con mayor prioridad
+ al actual es agregado a la 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|ready_list|
+\end_layout
+
+\end_inset
+
+, entonces debe de ceder el procesador, es decir, llama a
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|thread_yield(...)|
+\end_layout
+
+\end_inset
+
+.
+ Lo mismo sucede si el proceso actual modifica su priodad por medio de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|thread_set_priority(...)|
+\end_layout
+
+\end_inset
+
+, si este deja de ser el de mayor prioridad, también tiene que forzar un
+ cambio de contexto por medio de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|thread_yield(...)|
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing onehalf
+\noindent
 Dentro de 
 \begin_inset ERT
 status open
@@ -931,21 +1601,51 @@ e hardware.
 \end_layout
 
 \begin_layout Itemize
-Atención con los semáforos, asegurate que antes de hacer un posible cambio
- de contexto en realidad estés incrementado el valor del semáforo.
+\paragraph_spacing onehalf
+\noindent
+Atención con los 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|semáforos|
+\end_layout
+
+\end_inset
+
+, asegurate que antes de llamar a la función 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|thread_unblock(...)|
+\end_layout
+
+\end_inset
+
+ estés incrementado el valor del semáforo.
 \end_layout
 
 \begin_layout Section
+\paragraph_spacing double
 Entrega
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing double
 Tienes que entregar todos los archivos que modificaste como parte de tu
  solución, seguiendo la estructura también descrita en la práctica anterior,
  y sólo esos archivos.
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing double
 De nuevo el documento de diseño vale la mitad de la calificación de la práctica.
 \end_layout
 
