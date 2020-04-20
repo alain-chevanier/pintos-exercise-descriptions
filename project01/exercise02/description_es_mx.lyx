@@ -111,7 +111,7 @@ Ricchy Alaín Pérez Chevanier (alain.chevanier@ciencias.unam.mx)
 
 \family sans
 \shape smallcaps
-Fecha de Entrega: 24 de Abril de 2020
+Fecha de Entrega: 04 de Mayo de 2020
 \end_layout
 
 \begin_layout Section
@@ -185,8 +185,7 @@ verb|pintos|
 
 \end_inset
 
- y también un del manejo de interrupciones, pues de hecho modificaste el
- 
+ y también del manejo de interrupciones, pues de hecho modificaste el 
 \begin_inset ERT
 status open
 
@@ -212,7 +211,7 @@ verb|timer|
 
 \end_inset
 
- de como parte de tu solución.
+ como parte de tu solución.
 \end_layout
 
 \begin_layout Standard
@@ -317,7 +316,7 @@ verb|scheduler de prioridades|
 \end_inset
 
 .
- Lo que buscamos ahora es que el 
+ Lo que buscamos es que el 
 \begin_inset ERT
 status open
 
@@ -399,7 +398,7 @@ verb|thread.c|
 .
 
 \series default
- La función encargada de realizar todo los pasos que implica una llamada
+ La función encargada de realizar todos los pasos que implica una llamada
  a scheduler es 
 \begin_inset ERT
 status open
@@ -461,7 +460,7 @@ Haciendo list_pop_front de la ready_list
 \begin_layout Standard
 \paragraph_spacing double
 Las únicas funciones públicas del módulo de threads que permiten añadir
- threads a la lista 
+ procesos a la lista 
 \begin_inset ERT
 status open
 
@@ -518,7 +517,7 @@ verb|thread_unblock()|
 
 \end_inset
 
-: Recibe como parámetro un thread en estado 
+: Recibe como parámetro un apuntador a un proceso en estado 
 \begin_inset ERT
 status open
 
@@ -545,9 +544,34 @@ verb|ready_list|
 \end_inset
 
 .
- Esta función puede ser llamada en todo momento, incluso en contexto de
- interupciones, por ejemplo durante una llamada al interrupt handler del
- timer de 
+ Esta función puede ser llamada en todo momento, incluso en el contexto
+ de interupciones externas, por ejemplo durante una llamada al 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|interrupt handler|
+\end_layout
+
+\end_inset
+
+ del 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|timer|
+\end_layout
+
+\end_inset
+
+ de 
 \begin_inset ERT
 status open
 
@@ -784,7 +808,7 @@ Base de código
 \begin_layout Standard
 \paragraph_spacing double
 \noindent
-Recibirás la misma base de código que para la práctica pasada, solo el script
+Recibirás la misma base de código que para la práctica pasada, sólo el script
  
 \begin_inset ERT
 status open
@@ -804,6 +828,29 @@ verb|execute-tests|
  De hecho en tu entrega tienes que enviar todos los archivos que modificaste
  tanto en esta práctica como en la anterior para que nosotros podamos evaluar
  tu solución en su totalidad.
+\end_layout
+
+\begin_layout Subsection
+Ajustes en la imagen de Docker
+\end_layout
+
+\begin_layout Standard
+Actualizamos la imagen de Docker que utilizamos para compilar y ejecutar
+ el código de las prácticas.
+ Ejecuta el comando 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|./docker-exec pull-image|
+\end_layout
+
+\end_inset
+
+ antes de .
 \end_layout
 
 \begin_layout Subsection
@@ -877,10 +924,10 @@ Excepto si se encuentra atendiendo una interrupción externa/de hardware,
  ceder el procesador al nuevo proceso.
  De forma similar, cuando un proceso está esperando en un candado, semáforo
  o variable de condición, el proceso en espera con la más alta prioridad
- debe de ser despertado primero.
+ debe de ser el primero en despertar.
  Un proceso puede incrementar o disminuir su propia prioridad en cualquier
- momento, pero si éste disminuye su prioridad y deja de ser la más alta,
- debe de 
+ momento, pero si éste disminuye su prioridad y deja de tener la más alta
+ priodad, debe de 
 \begin_inset Quotes eld
 \end_inset
 
@@ -922,8 +969,7 @@ verb|PRI_MAX (63)|
 .
  Los números más bajos corresponden a prioridades más bajas, es decir, la
  prioridad 0 es la más baja y 63 la más alta.
- La prioridad inicial de de proceso es pasada como argumento a la función
- 
+ La prioridad inicial de proceso es pasada como argumento a la función 
 \begin_inset ERT
 status open
 
@@ -1059,9 +1105,9 @@ priority-change
 \family sans
 thread_set_priority()
 \family default
-, de tal manera que si el thread actual disminuye su prioridad y deja de
- ser el thread con mayor prioridad entonces cede el procesador al thread
- con mayor prioridad dentro de la lista 
+, de tal manera que si el proceso actual disminuye su prioridad y deja de
+ ser el de mayor prioridad, cede el procesador al thread con mayor prioridad
+ dentro de la lista 
 \family sans
 ready_list
 \family default
@@ -1074,12 +1120,10 @@ ready_list
 \family sans
 priority-preempt
 \family default
-: Si el proceso actual crea otro proceso pero con mayor prioridad, entonces
- tan pronto como sea posible el proceso actual cede el procesador a dicho
- proceso nuevo; y aunque el proceso nuevo fuerce llamadas al scheduler,
- éste es el que continusa ejecutándose pues sigue siendo el proceso con
- mayor prioridad.
- 
+: Si el proceso actual crea otro proceso pero con mayor prioridad, tan pronto
+ como sea posible el proceso actual cede el procesador a dicho proceso nuevo;
+ y aunque el proceso nuevo fuerce llamadas al scheduler, éste es el que
+ continua ejecutándose pues sigue siendo el proceso con mayor prioridad.
 \end_layout
 
 \begin_layout Itemize
@@ -1088,8 +1132,8 @@ priority-preempt
 \family sans
 priority-fifo
 \family default
-: Si hay más de un proceso con la prioridad más alta del sistema entonces
- para ellos el scheduler se comporta como un 
+: Si hay más de un proceso con la prioridad más alta del sistema, para ellos
+ el scheduler se comporta como un 
 \begin_inset ERT
 status open
 
@@ -1154,7 +1198,7 @@ verb|src/threads/execute-tests|
 
 \end_inset
 
-, que ejecutará todas las pruebas de este práctica y de la anterior, es
+, que ejecutará todas las pruebas de esta práctica y de la anterior, es
  decir, todas las pruebas que hemos resuelto del proyecto 01.
 \end_layout
 
@@ -1361,16 +1405,16 @@ verb|thread_unblock(...)|
 
 \end_inset
 
-, deja que éste termine su ejecución, es decir no fuerces un cambio de contexto
- aunque los procesos que está desbloqueando tengan mayor priodad que él,
- de otra manera el sistema operativo no podrá iniciar.
+, deja que éste termine su ejecución, es decir, no fuerces un cambio de
+ contexto aunque los procesos que está desbloqueando tengan mayor priodad
+ que él, de otra manera el sistema operativo no podrá iniciar.
 \end_layout
 
 \begin_layout Itemize
 \paragraph_spacing onehalf
 \noindent
 Dado que las prioridades están acotadas entre 0 y 63, es posible utilizar
- una estructura que en tiempo constante nos diga donde en qué nivel vamos
+ una estructura de datos que en tiempo constante nos diga en qué nivel vamos
  a insertar un proceso en la 
 \begin_inset ERT
 status open
@@ -1403,18 +1447,7 @@ verb|ready_list|
 
 \end_inset
 
- ordenada, sin embargo insertar en una lista ordenada toma tiempo lineal
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-Aunque esto implicaría que la inserción de procesos en la lista lleve tiempo
- lineal
-\end_layout
-
-\end_inset
-
-.
+ ordenada, sin embargo insertar en una lista ordenada toma tiempo lineal.
 \end_layout
 
 \begin_layout Itemize
@@ -1434,21 +1467,9 @@ verb|thread_unblock(...)|
 
 \end_inset
 
- nada impide que ésta sea llamada dentro de un 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-verb|interrupt handler|
-\end_layout
-
-\end_inset
-
-; más aun dentro de tu solución a la práctica anterior haces llamadas a
- 
+ nada impide que ésta sea llamada dentro del contexto de una interrupción
+ externa; más aun dentro de tu solución a la práctica anterior haces llamadas
+ a 
 \begin_inset ERT
 status open
 
@@ -1597,7 +1618,20 @@ verb|true|
 \end_inset
 
  si el proceso actual está atendiendo la ejecución de una interrupción externa/d
-e hardware.
+e hardware, y regresa 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|false|
+\end_layout
+
+\end_inset
+
+ en caso contrario.
 \end_layout
 
 \begin_layout Itemize
@@ -1629,7 +1663,8 @@ verb|thread_unblock(...)|
 
 \end_inset
 
- estés incrementado el valor del semáforo.
+ estés incrementado el valor del semáforo, de otra manera el semáforo no
+ incrementará su valor antes de que suceda un cambio de contexto.
 \end_layout
 
 \begin_layout Section
@@ -1640,8 +1675,8 @@ Entrega
 \begin_layout Standard
 \paragraph_spacing double
 Tienes que entregar todos los archivos que modificaste como parte de tu
- solución, seguiendo la estructura también descrita en la práctica anterior,
- y sólo esos archivos.
+ solución (con git es facil darse cuenta que cambió), seguiendo la estructura
+ también descrita en la práctica anterior, y sólo esos archivos.
 \end_layout
 
 \begin_layout Standard
